@@ -81,7 +81,10 @@ def searchInterest():
     return render_template('searchinterest.html')
 
 @app.route('/searchInterestAuth', methods=['GET', 'POST'])
-def interestAuth():
+def searchInterestAuth():
+    if not session.get('username'):
+        return redirect('/login')
+
     roommatecnt = request.args.get('roommatecnt')
     moveindate = datetime.datetime.strptime(request.args.get('moveindate'), '%Y-%m-%d').date()
     error = "No one has expressed an interest in the apartments that you want"
@@ -103,6 +106,9 @@ def postInterest():
 
 @app.route('/postInterestAuth', methods=['GET', 'POST'])
 def postInterestAuth():
+    if not session.get('username'):
+        return redirect('/login')
+
     username = session['username']
     unitrentid = request.form['unitrentid']
     roommatecnt = request.form['roommatecnt']
@@ -117,7 +123,7 @@ def postInterestAuth():
         query = 'SELECT AvailableDateForMoveIn FROM apartmentunit WHERE UnitRentID = %s'
         cursor.execute(query, (unitrentid))
         tmp = cursor.fetchone()
-        if moveindate != tmp['AvailableDateForMoveIn']:
+        if tmp and moveindate != tmp['AvailableDateForMoveIn']:
             error = f"The apartment is not available by this date. It's available by {tmp['AvailableDateForMoveIn']}"
             return render_template('postinterest.html', error = error)
 
@@ -133,6 +139,9 @@ def postInterestAuth():
 
 @app.route('/viewInterest', methods=['GET'])
 def viewInterest():
+    if not session.get('username'):
+        return redirect('/login')
+
     cursor = conn.cursor()
     query = 'SELECT * FROM interests'
     cursor.execute(query)
@@ -141,6 +150,9 @@ def viewInterest():
 
 @app.route('/initiator', methods=['GET'])
 def initiateAuth():
+        if not session.get('username'):
+            return redirect('/login')
+
         contact = request.args.get('contact')
         error = "This user doesn't exist"
 
@@ -165,6 +177,9 @@ def search():
 
 @app.route('/searchAptAuth', methods=['POST'])
 def searchAuth():
+    if not session.get('username'):
+        return redirect('/login')
+
     bldg = request.form['bldg']
     comp = request.form['company']
     user = session['username']
@@ -189,6 +204,9 @@ def registerPets():
 
 @app.route('/registerPetsAuth', methods=['POST'])
 def registerPetsAuth():
+    if not session.get('username'):
+        return redirect('/login')
+
     petname = request.form['petname']
     pettype = request.form['pettype']
     petsize = request.form['petsize']
@@ -211,6 +229,9 @@ def editPets():
 
 @app.route('/editPetsAuth', methods=['POST'])
 def editPetsAuth():
+    if not session.get('username'):
+        return redirect('/login')
+
     oldpetname = request.form['oldpetname']
     oldpettype = request.form['oldpettype']
     newpetname = request.form['newpetname']
@@ -239,6 +260,9 @@ def estimateRent():
 
 @app.route('/estimateRentAuth', methods=['GET', 'POST'])
 def estimateRentAuth():
+    if not session.get('username'):
+        return redirect('/login')
+
     zipcode = request.form['zipcode']
     numrooms = request.form['xbxb']
 
@@ -266,8 +290,10 @@ def display():
 
 @app.route('/displayAuth', methods=['GET', 'POST'])
 def displayAuth():
-    search = request.form['search']
+    if not session.get('username'):
+        return redirect('/login')
 
+    search = request.form['search']
     cursor = conn.cursor()
     query = 'SELECT * FROM apartmentbuilding WHERE BuildingName = %s'
     cursor.execute(query, (search))
