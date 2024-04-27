@@ -328,7 +328,7 @@ def displayAuth():
             cnt = res[0]['cnt']
             return render_template('display.html', data = {'type': 'building', 'yr': yr, 'addr': addr, 'aType': ', '.join(tmp), 'cnt': cnt})
         else:
-            return render_template('display.html', data = {'type': 'building', 'yr': yr, 'aType': 0, 'cnt': cnt})
+            return render_template('display.html', data = {'type': 'building', 'yr': yr, 'aType': '', 'cnt': cnt})
     else:
         cursor = conn.cursor()
         query = 'SELECT * FROM apartmentunit WHERE UnitRentID = %s'
