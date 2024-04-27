@@ -68,7 +68,7 @@ def loginAuth():
         else:
             return render_template('login.html')
     else:
-        error = "This user doesn't exist"
+        error = "Incorrect username or password"
         return render_template('login.html', error = error)
 
 @app.route('/logout', methods=['GET'])
