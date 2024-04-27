@@ -18,7 +18,7 @@ Roomio
 
 ![image](https://github.com/kirth123/roomio/assets/88990184/982738c8-aa30-428b-abdc-258a0e7a2ef3)
 
-![image](https://github.com/kirth123/roomio/assets/88990184/acc6f265-8266-44c8-839b-fdf4ff6fcc66)
+![image](https://github.com/kirth123/roomio/assets/88990184/109db89f-c550-4409-b719-22d77e892249)
 
 ![image](https://github.com/kirth123/roomio/assets/88990184/65511da1-a0a8-4347-88a0-d8ad9fb1eb48)
 
