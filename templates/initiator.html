@@ -1,0 +1,31 @@
+{% block header %}
+  <h1>{% block title %}Information About Initiator{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+{% if error is defined %}
+  <h1>{{ error }}</h1>
+{% endif %}
+{% if data is defined %}
+  <table>
+    <tr>  
+      <td>Username</td>
+      <td>First Name</td>
+      <td>Last Name</td>
+      <td>Gender</td>
+      <td>Email Address</td>
+      <td>Phone Number</td>
+      <td>Birthday</td>
+    </tr>
+    <tr>  
+      <td>{{ data['username'] }}</td>
+      <td>{{ data['first_name'] }}</td>
+      <td>{{ data['last_name'] }}</td>
+      <td>{{ data['gender'] }}</td>
+      <td>{{ data['email'] }}</td>
+      <td>{{ data['Phone'] }}</td>
+      <td>{{ data['DOB'] }}</td>
+    </tr>
+  </table>
+{% endif %}
+{% endblock %}

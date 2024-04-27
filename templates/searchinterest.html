@@ -1,0 +1,34 @@
+{% block header %}
+  <h1>{% block title %}Find apartments that you want to join{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+{% if error is defined %}
+  <h1>{{ error }}</h1>
+{% endif %}
+  <form method="get" action="searchInterestAuth">
+    <br/><br/><label for="roommatecnt">Roommate Count</label>
+    <input name="roommatecnt" id="roommatecnt" required>
+    <br/><br/><label for="moveindate">Move in Date</label>
+    <input type="date" name="moveindate" id="moveindate" required>
+    <br/><br/><input type="submit" value="Submit">
+  </form>
+{% if apts is defined %}
+  <table>
+    <tr>  
+      <td>Username</td>
+      <td>Unit Rent ID</td>
+      <td>Roommate Count</td>
+      <td>Move-In Date</td>
+    </tr>
+    {% for apt in apts %}  
+      <tr>  
+        <td><a href="initiator?contact={{ apt['username'] }}">{{ apt['username'] }}</a></td>
+        <td>{{ apt['UnitRentID'] }}</td>
+        <td>{{ apt['RoommateCnt'] }}</td>
+        <td>{{ apt['MoveInDate'] }}</td>
+      </tr>
+    {% endfor %} 
+  </table>
+{% endif %}
+{% endblock %}

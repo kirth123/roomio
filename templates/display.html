@@ -1,0 +1,17 @@
+{% block header %}
+  <h1>{% block title %}Search Apartments{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+{% if error is defined %}
+  <h1>{{ error }}</h1>
+{% endif %}
+  <form method="post" action="displayAuth">
+    <label for="search">Name of Apartment Building or Unit Rent ID</label>
+    <input name="search" id="search" required>
+    <br/><br/><input type="submit" value="Submit">
+  </form>
+{% if data is defined %}
+  <h1>{{ data }}</h1>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,22 @@
+{% block header %}
+  <h1>{% block title %}Edit Pets{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+{% if error is defined %}
+  <h1>{{ error }}</h1>
+{% endif %}
+  <form method="post" action="editPetsAuth">
+    <label for="oldpetname">Old Pet Name</label>
+    <input name="oldpetname" id="oldpetname" required>
+    <br/><br/><label for="oldpettype">Old Pet Type</label>
+    <input name="oldpettype" id="oldpettype" required>
+    <br/><br/><label for="newpetname">New Pet Name</label>
+    <input name="newpetname" id="newpetname" required>
+    <br/><br/><label for="newpettype">New Pet Type</label>
+    <input name="newpettype" id="newpettype" required>
+    <br/><br/><label for="newpetsize">New Pet Size</label>
+    <input name="newpetsize" id="newpetsize" required>
+    <br/><br/><input type="submit" value="Submit">
+  </form>
+{% endblock %}

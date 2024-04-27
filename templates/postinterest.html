@@ -1,0 +1,18 @@
+{% block header %}
+  <h1>{% block title %}Post interest in apartment units{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+{% if error is defined %}
+  <h1>{{ error }}</h1>
+{% endif %}
+  <form method="post" action="postInterestAuth">
+    <label for="unitrentid">Unit Rent ID</label>
+    <input name="unitrentid" id="unitrentid" required>
+    <br/><br/><label for="roommatecnt">Roommate Count</label>
+    <input name="roommatecnt" id="roommatecnt" required>
+    <br/><br/><label for="moveindate">Move in Date</label>
+    <input type="date" name="moveindate" id="moveindate" required>
+    <br/><br/><input type="submit" value="Submit">
+  </form>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% block header %}
+  <h1>{% block title %}Register Pets{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+{% if error is defined %}
+  <h1>{{ error }}</h1>
+{% endif %}
+  <form method="post" action="registerPetsAuth">
+    <label for="petname">Pet Name</label>
+    <input name="petname" id="petname" required>
+    <br/><br/><label for="pettype">Pet Type</label>
+    <input name="pettype" id="pettype" required>
+    <br/><br/><label for="petsize">Pet Size</label>
+    <input name="petsize" id="petsize" required>
+    <br/><br/><input type="submit" value="Submit">
+  </form>
+{% endblock %}

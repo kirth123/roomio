@@ -1,0 +1,26 @@
+{% block header %}
+  <h1>{% block title %}Check out apartments that others have expressed an interest in{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+{% if apts is defined %}
+  <table>
+    <tr>  
+      <td>Username</td>
+      <td>Unit Rent ID</td>
+      <td>Roommate Count</td>
+      <td>Move-In Date</td>
+      <td>Join</td>
+    </tr>
+    {% for apt in apts %}  
+      <tr>  
+        <td>{{ apt['username'] }}</td>
+        <td>{{ apt['UnitRentID'] }}</td>
+        <td>{{ apt['RoommateCnt'] }}</td>
+        <td>{{ apt['MoveInDate'] }}</td>
+        <td>Join</td>
+      </tr>
+    {% endfor %} 
+  </table>
+{% endif %}
+{% endblock %}

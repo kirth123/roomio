@@ -1,0 +1,16 @@
+{% block header %}
+  <h1>{% block title %}Login{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+{% if error is defined %}
+  <h1>{{ error }}</h1>
+{% endif %}
+  <form method="post" action="loginAuth">
+    <label for="username">Username</label>
+    <input name="username" id="username" required>
+    <br/><br/><label for="passwd">Password</label>
+    <input type="password" name="passwd" id="passwd" required>
+    <br/><br/><input type="submit" value="Submit">
+  </form>
+{% endblock %}

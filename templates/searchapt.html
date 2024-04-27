@@ -1,0 +1,36 @@
+{% block header %}
+  <h1>{% block title %}Search Apartments Based on Criteria{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+{% if error is defined %}
+  <h1>{{ error }}</h1>
+{% endif %}
+  <form method="post" action="searchAptAuth">
+    <label for="bldg">Building</label>
+    <input name="bldg" id="bldg" required>
+    <br/><br/><label for="company">Company</label>
+    <input name="company" id="company" required>
+    <br/><br/><input type="submit" value="Submit">
+  </form>
+{% if apts is defined %}
+  <table>
+    <tr>  
+      <td>Unit Rent ID</td>
+      <td>Monthly Rent</td>
+      <td>Square Footage</td>
+      <td>Number of Rooms</td>
+      <td>Move-In Date</td>
+    </tr>
+    {% for apt in apts %}  
+      <tr>  
+        <td>{{ apt['UnitRentID'] }}</td>
+        <td>{{ apt['MonthlyRent'] }}</td>
+        <td>{{ apt['squareFootage'] }}</td>
+        <td>{{ apt['cnt'] }}</td>
+        <td>{{ apt['AvailableDateForMoveIn'] }}</td>
+      </tr>
+    {% endfor %} 
+  </table>
+{% endif %}
+{% endblock %}
