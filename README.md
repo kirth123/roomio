@@ -1,6 +1,6 @@
 # Roomio
 
-Roomio is a webapp that allows people to find apartments that they're interested in. They can create a profile on the site, register their pets, and find apartments they're interested in. If someone has already expressed an interest in an apartment, a user has the option to join their interest. 
+Roomio is a webapp that allows people to find apartments that they're interested in. They can create a profile on the site, register their pets, and find apartments they're interested in. If someone has already expressed an interest in an apartment, a user has the option to join their interest. I was the sole developer for this project. 
 
 ![image](https://github.com/kirth123/roomio/assets/88990184/91bddb62-d8ff-4d3b-967b-4153d862ed64)
 
