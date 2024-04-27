@@ -14,21 +14,27 @@
     <br/><br/><input type="submit" value="Submit">
   </form>
 {% if apts is defined %}
-  <table>
+  <table style="border-spacing: 10px;">
     <tr>  
       <td>Unit Rent ID</td>
       <td>Monthly Rent</td>
       <td>Square Footage</td>
       <td>Number of Rooms</td>
       <td>Move-In Date</td>
+      <td>Are pets allowed?</td>
+      <td>Registration Fee</td>
+      <td>Monthly Fee</td>
     </tr>
     {% for apt in apts %}  
       <tr>  
-        <td>{{ apt['UnitRentID'] }}</td>
+        <td><a href="viewInterest?unit={{ apt['UnitRentID'] }}">{{ apt['UnitRentID'] }}</a></td>
         <td>{{ apt['MonthlyRent'] }}</td>
         <td>{{ apt['squareFootage'] }}</td>
         <td>{{ apt['cnt'] }}</td>
         <td>{{ apt['AvailableDateForMoveIn'] }}</td>
+        <td>{{ apt['isAllowed'] }}</td>
+        <td>{{ apt['RegistrationFee'] }}</td>
+        <td>{{ apt['MonthlyFee'] }}</td>
       </tr>
     {% endfor %} 
   </table>

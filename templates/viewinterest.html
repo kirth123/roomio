@@ -3,8 +3,8 @@
 {% endblock %}
 
 {% block content %}
-{% if apts is defined %}
-  <table>
+{% if ppl is defined %}
+  <table style="border-spacing: 10px;">
     <tr>  
       <td>Username</td>
       <td>Unit Rent ID</td>
@@ -12,12 +12,12 @@
       <td>Move-In Date</td>
       <td>Join</td>
     </tr>
-    {% for apt in apts %}  
+    {% for person in ppl %}  
       <tr>  
-        <td>{{ apt['username'] }}</td>
-        <td>{{ apt['UnitRentID'] }}</td>
-        <td>{{ apt['RoommateCnt'] }}</td>
-        <td>{{ apt['MoveInDate'] }}</td>
+        <td><a href="/initiator?contact={{ person['username'] }}">{{ person['username'] }}</a></td>
+        <td>{{ person['UnitRentID'] }}</td>
+        <td>{{ person['RoommateCnt'] }}</td>
+        <td>{{ person['MoveInDate'] }}</td>
         <td>Join</td>
       </tr>
     {% endfor %} 

@@ -12,6 +12,34 @@
     <br/><br/><input type="submit" value="Submit">
   </form>
 {% if data is defined %}
-  <h1>{{ data }}</h1>
+  <table style="border-spacing: 10px;">
+    {% if data['type'] == 'unit' %}
+      <tr>  
+        <td>Monthly Rent</td>
+        <td>Square Footage</td>
+        <td>Number of Rooms</td>
+        <td>Move-In Date</td>
+      </tr>
+      <tr>  
+        <td>{{ data['sq'] }}</td>
+        <td>{{ data['rent'] }}</td>
+        <td>{{ data['cnt'] }}</td>
+        <td>{{ data['date'] }}</td>
+      </tr>
+    {% else %}
+      <tr>  
+        <td>Year Built</td>
+        <td>Address</td>
+        <td>Number of Apartment Units</td>
+        <td>Amenities</td>
+      </tr>
+      <tr>  
+        <td>{{ data['yr'] }}</td>
+        <td>{{ data['addr'] }}</td>
+        <td>{{ data['cnt'] }}</td>
+        <td>{{ data['aType'] }}</td>
+    </tr>
+    {% endif %}
+  </table>
 {% endif %}
 {% endblock %}

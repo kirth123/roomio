@@ -104,7 +104,7 @@ def searchInterestAuth():
 def postInterest():
     return render_template('postinterest.html')
 
-@app.route('/postInterestAuth', methods=['GET', 'POST'])
+@app.route('/postInterestAuth', methods=['POST'])
 def postInterestAuth():
     if not session.get('username'):
         return redirect('/login')
@@ -134,6 +134,7 @@ def postInterestAuth():
         error = "Your interest has been registered."
         return render_template('postinterest.html', error = error)
     else:
+        print(data)
         error = "Someone has already expressed interest in this unit. You can choose to join their group instead."
         return render_template('postinterest.html', error = error)
 
@@ -142,11 +143,12 @@ def viewInterest():
     if not session.get('username'):
         return redirect('/login')
 
+    unit = request.args.get('unit')
     cursor = conn.cursor()
-    query = 'SELECT * FROM interests'
-    cursor.execute(query)
-    apts = cursor.fetchall()
-    return render_template('viewinterest.html', apts = apts)
+    query = 'SELECT * FROM interests WHERE UnitRentID = %s'
+    cursor.execute(query, (unit))
+    ppl = cursor.fetchall()
+    return render_template('viewinterest.html', ppl = ppl)
 
 @app.route('/initiator', methods=['GET'])
 def initiateAuth():
@@ -154,8 +156,6 @@ def initiateAuth():
             return redirect('/login')
 
         contact = request.args.get('contact')
-        error = "This user doesn't exist"
-
         if contact:
             cursor = conn.cursor()
             query = 'SELECT username, DOB, gender, first_name, last_name, email, Phone FROM users WHERE username = %s'
@@ -163,13 +163,17 @@ def initiateAuth():
             data = cursor.fetchone()
 
             if not data:
+                error = "This user doesn't exist."
                 return render_template('initiator.html', error = error)
             else:
                 if data['gender'] == 2:
                     data['gender'] = 'Female'
                 else:
                     data['gender'] = 'Male'
-                return render_template('initiator.html', data = data)         
+                return render_template('initiator.html', data = data)   
+        else:
+            error = "You need to provide a username to reference."
+            return render_template('initiator.html', error = error)   
 
 @app.route('/searchApt', methods=['GET'])
 def search():
@@ -184,18 +188,23 @@ def searchAuth():
     comp = request.form['company']
     user = session['username']
 
-    cursor = conn.cursor()
-    query = 'SELECT unit.*, pp.isAllowed FROM apartmentunit unit NATURAL JOIN petpolicy pp NATURAL JOIN pets WHERE pets.username = %s AND CompanyName = %s AND BuildingName = %s'
+    cursor = conn.cursor() 
+    query = 'SELECT unit.*, pp.isAllowed, pp.MonthlyFee, pp.RegistrationFee FROM apartmentunit unit NATURAL JOIN petpolicy pp NATURAL JOIN pets WHERE pets.username = %s AND pp.CompanyName = %s AND pp.BuildingName = %s'
     cursor.execute(query, (user, comp, bldg))
     apts = cursor.fetchall()
-    tmp = apts
-    i = 0
-    for apt in apts:
-        query = 'SELECT COUNT(rooms.name) as cnt FROM apartmentunit unit JOIN rooms on unit.UnitRentID = rooms.UnitRentID WHERE unit.UnitRentID = %s'
-        cursor.execute(query, (apt['UnitRentID']))
-        var = cursor.fetchone()
-        tmp[i]['cnt'] = var['cnt']
-        i += 1
+    tmp = []
+    visited = set()
+
+    for i in range(len(apts)):
+        if apts[i]['UnitRentID'] not in visited:
+            query = 'SELECT COUNT(rooms.name) as cnt FROM apartmentunit unit JOIN rooms on unit.UnitRentID = rooms.UnitRentID WHERE unit.UnitRentID = %s'
+            cursor.execute(query, (apts[i]['UnitRentID']))
+            var = cursor.fetchone()
+            tmp.append(apts[i])
+            tmp[i]['cnt'] = var['cnt']
+            visited.add(tmp[i]['UnitRentID'])
+            tmp[i]['isAllowed'] = 'Yes' if tmp[i]['isAllowed'] else 'No'
+    print(tmp)
     return render_template('searchapt.html', apts = tmp)
 
 @app.route('/registerPets', methods=['GET'])
@@ -243,16 +252,23 @@ def editPetsAuth():
     query = 'SELECT * FROM pets where PetName = %s AND PetType = %s AND username = %s'
     cursor.execute(query, (oldpetname, oldpettype, user))
     res = cursor.fetchone()
-    print(user, oldpetname, oldpettype, res)
+
     if not res: 
         error = "You've not registered a pet with this name or type."
         return render_template('editpets.html', error = error)
     else:
-        print('success')
-        ins = 'UPDATE IGNORE pets SET PetName = %s, PetType = %s, PetSize = %s WHERE username = %s'
-        cursor.execute(ins, (newpetname, newpettype, newpetsize, user))
-        msg = "You have updated your pet's information successfully."
-        return render_template('editpets.html', error = msg)
+        query = 'SELECT * FROM pets where PetName = %s AND PetType = %s AND username = %s'
+        cursor.execute(query, (newpetname, newpettype, user))
+        res = cursor.fetchall()
+
+        if not res:
+            ins = 'UPDATE IGNORE pets SET PetName = %s, PetType = %s, PetSize = %s WHERE username = %s'
+            cursor.execute(ins, (newpetname, newpettype, newpetsize, user))
+            msg = "You have updated your pet's information successfully."
+            return render_template('editpets.html', error = msg)
+        else:
+            error = "You already have a pet with this name and type."
+            return render_template('editpets.html', error = error)
 
 @app.route('/estimateRent', methods=['GET'])
 def estimateRent():
@@ -301,18 +317,40 @@ def displayAuth():
 
     if res:
         yr = res['YearBuilt']
-        addr = f"{res['AddrNum']} {res['AddrStreet']}\n {res['AddrCity']}, {res['AddrState']}, {res['AddrZipCode']}"
+        addr = f"{res['AddrNum']} {res['AddrStreet']} \n {res['AddrCity']}, {res['AddrState']}, {res['AddrZipCode']}"
         cursor = conn.cursor()
-        query = 'SELECT COUNT(UnitRentID) as cnt, aType FROM apartmentunit unit NATURAL JOIN provides WHERE unit.BuildingName = %s GROUP BY unit.BuildingName'
+        query = 'SELECT COUNT(unit.UnitRentID) as cnt, aType FROM apartmentunit unit NATURAL JOIN provides WHERE unit.BuildingName = %s GROUP BY unit.BuildingName'
         cursor.execute(query, (search))
         res = cursor.fetchall()
-        return render_template('display.html', data = {'type': 'building', 'yr': yr, 'addr': addr, 'atype': res['aType'], 'cnt': res['cnt']})
+
+        if res:
+            tmp = [item['aType'] for item in res]
+            cnt = res[0]['cnt']
+            return render_template('display.html', data = {'type': 'building', 'yr': yr, 'addr': addr, 'aType': ', '.join(tmp), 'cnt': cnt})
+        else:
+            return render_template('display.html', data = {'type': 'building', 'yr': yr, 'aType': 0, 'cnt': cnt})
     else:
         cursor = conn.cursor()
-        query = 'SELECT COUNT(rooms.name) as cnt, squareFootage, monthlyRent, AvailableDateForMoveIn FROM apartmentunit unit NATURAL JOIN rooms WHERE unit.UnitRentID = %s GROUP BY unit.UnitRentID'
+        query = 'SELECT * FROM apartmentunit WHERE UnitRentID = %s'
         cursor.execute(query, (search))
         res = cursor.fetchone()
-        return render_template('display.html', data = {'type': 'unit', 'sq': res['squareFootage'], 'monthlyRent': res['monthlyRent'], 'cnt': res['cnt'], 'date': res['AvailableDateForMoveIn']})
+
+        if res:
+            rent = res['MonthlyRent']
+            date = res['AvailableDateForMoveIn']
+            sq = res['squareFootage']
+            cursor = conn.cursor()
+            query = 'SELECT COUNT(rooms.name) as cnt FROM apartmentunit unit JOIN rooms on unit.UnitRentID = rooms.UnitRentID WHERE unit.UnitRentID = %s GROUP BY unit.UnitRentID'
+            cursor.execute(query, (search))
+            res = cursor.fetchone()
+
+            if res:
+                return render_template('display.html', data = {'type': 'unit', 'sq': sq, 'rent': rent, 'cnt': res['cnt'], 'date': date})
+            else:
+                return render_template('display.html', data = {'type': 'unit', 'sq': sq, 'rent': rent, 'cnt': 0, 'date': date})
+        else:
+            error = "We couldn't find any unit or building that matched the information given."
+            return render_template('display.html', error = error)
 
 app.secret_key = ";wm0Mv0B8~Aj"
 if __name__ == "__main__":
