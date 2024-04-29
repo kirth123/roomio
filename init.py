@@ -86,14 +86,25 @@ def searchInterestAuth():
         return redirect('/login')
 
     roommatecnt = request.args.get('roommatecnt')
-    moveindate = datetime.datetime.strptime(request.args.get('moveindate'), '%Y-%m-%d').date()
+    if request.args.get('moveindate'):
+        moveindate = datetime.datetime.strptime(request.args.get('moveindate'), '%Y-%m-%d').date()
+    else:
+        moveindate = None
     error = "No one has expressed an interest in the apartments that you want"
-
     cursor = conn.cursor()
-    query = 'SELECT * FROM interests WHERE RoommateCnt = %s AND MoveInDate = %s'
-    cursor.execute(query, (roommatecnt, moveindate))
-    apts = cursor.fetchall()
-    print(apts)
+
+    if roommatecnt and moveindate:
+        query = 'SELECT * FROM interests WHERE RoommateCnt = %s AND MoveInDate = %s'
+        cursor.execute(query, (roommatecnt, moveindate))
+        apts = cursor.fetchall()
+    elif roommatecnt:
+        query = 'SELECT * FROM interests WHERE RoommateCnt = %s'
+        cursor.execute(query, (roommatecnt))
+        apts = cursor.fetchall()
+    else:
+        query = 'SELECT * FROM interests WHERE MoveInDate = %s'
+        cursor.execute(query, (moveindate))
+        apts = cursor.fetchall()
 
     if apts:
         return render_template('searchinterest.html', apts = apts)
@@ -124,7 +135,7 @@ def postInterestAuth():
         cursor.execute(query, (unitrentid))
         tmp = cursor.fetchone()
         if tmp and moveindate != tmp['AvailableDateForMoveIn']:
-            error = f"The apartment is not available by this date. It's available by {tmp['AvailableDateForMoveIn']}"
+            error = f"The apartment is not available by this date. It's available by {tmp['AvailableDateForMoveIn']}."
             return render_template('postinterest.html', error = error)
 
         cursor = conn.cursor()
@@ -142,6 +153,8 @@ def postInterestAuth():
 def viewInterest():
     if not session.get('username'):
         return redirect('/login')
+    if not request.args.get('unit'):
+        return render_template('viewinterest.html', error = "Please provide a unit that you want to view interests for")
 
     unit = request.args.get('unit')
     cursor = conn.cursor()
@@ -188,9 +201,17 @@ def searchAuth():
     comp = request.form['company']
     user = session['username']
 
-    cursor = conn.cursor() 
-    query = 'SELECT unit.*, pp.isAllowed, pp.MonthlyFee, pp.RegistrationFee FROM apartmentunit unit NATURAL JOIN petpolicy pp NATURAL JOIN pets WHERE pets.username = %s AND pp.CompanyName = %s AND pp.BuildingName = %s'
-    cursor.execute(query, (user, comp, bldg))
+    cursor = conn.cursor()  
+    query = 'SELECT pets.PetName, pets.PetSize, pets.PetType, pp.isAllowed, pp.MonthlyFee, pp.RegistrationFee FROM petpolicy pp NATURAL JOIN pets WHERE pets.username = %s AND pp.BuildingName = %s AND pp.CompanyName = %s'
+    cursor.execute(query, (user, bldg, comp))
+    items = cursor.fetchall()
+    print(items)
+
+    for item in items:
+        item['isAllowed'] = 'Yes' if item['isAllowed'] else 'No'
+
+    query = 'SELECT unit.* FROM apartmentunit unit WHERE unit.BuildingName = %s AND unit.CompanyName = %s'
+    cursor.execute(query, (bldg, comp))
     apts = cursor.fetchall()
     tmp = []
     visited = set()
@@ -203,9 +224,8 @@ def searchAuth():
             tmp.append(apts[i])
             tmp[i]['cnt'] = var['cnt']
             visited.add(tmp[i]['UnitRentID'])
-            tmp[i]['isAllowed'] = 'Yes' if tmp[i]['isAllowed'] else 'No'
-    print(tmp)
-    return render_template('searchapt.html', apts = tmp)
+
+    return render_template('searchapt.html', apts = tmp, pets = items)
 
 @app.route('/registerPets', methods=['GET'])
 def registerPets():

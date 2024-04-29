@@ -3,6 +3,9 @@
 {% endblock %}
 
 {% block content %}
+{% if error is defined %}
+  <h1>{{ error }}</h1>
+{% endif %}
 {% if ppl is defined %}
   <table style="border-spacing: 10px;">
     <tr>  

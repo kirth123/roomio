@@ -21,9 +21,7 @@
       <td>Square Footage</td>
       <td>Number of Rooms</td>
       <td>Move-In Date</td>
-      <td>Are pets allowed?</td>
-      <td>Registration Fee</td>
-      <td>Monthly Fee</td>
+
     </tr>
     {% for apt in apts %}  
       <tr>  
@@ -32,9 +30,28 @@
         <td>{{ apt['squareFootage'] }}</td>
         <td>{{ apt['cnt'] }}</td>
         <td>{{ apt['AvailableDateForMoveIn'] }}</td>
-        <td>{{ apt['isAllowed'] }}</td>
-        <td>{{ apt['RegistrationFee'] }}</td>
-        <td>{{ apt['MonthlyFee'] }}</td>
+      </tr>
+    {% endfor %} 
+  </table>
+{% endif %}
+{% if pets is defined %}
+  <table style="border-spacing: 10px;">
+    <tr>  
+      <td>Pet Name</td>
+      <td>Pet Size</td>
+      <td>Pet Type</td>
+      <td>Is this pet allowed?</td>
+      <td>Registration Fee</td>
+      <td>Monthly Fee</td>
+    </tr>
+    {% for pet in pets %}  
+      <tr> 
+        <td>{{ pet['PetName'] }}</td>
+        <td>{{ pet['PetSize'] }}</td>
+        <td>{{ pet['PetType'] }}</td> 
+        <td>{{ pet['isAllowed'] }}</td>
+        <td>{{ pet['RegistrationFee'] }}</td>
+        <td>{{ pet['MonthlyFee'] }}</td>
       </tr>
     {% endfor %} 
   </table>
