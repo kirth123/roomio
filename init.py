@@ -302,9 +302,9 @@ def estimateRentAuth():
     zipcode = request.form['zipcode']
     numrooms = request.form['xbxb']
 
-    cursor = conn.cursor()
-    query = 'SELECT unit.MonthlyRent as rent FROM apartmentbuilding bldg NATURAL JOIN apartmentunit unit JOIN rooms ON unit.UnitRentID = rooms.UnitRentID WHERE bldg.AddrZipCode = %s GROUP BY unit.UnitRentID HAVING COUNT(rooms.name) = %s'
-    cursor.execute(query, (zipcode, numrooms))
+    cursor = conn.cursor() 
+    query = 'SELECT unit.MonthlyRent as rent FROM apartmentbuilding bldg NATURAL JOIN apartmentunit unit JOIN rooms on unit.UnitRentID = rooms.UnitRentID WHERE bldg.AddrZipCode = %s GROUP BY unit.UnitRentID HAVING COUNT(rooms.name) = %s'
+    cursor.execute(query, (zipcode, numrooms)) 
     rents = cursor.fetchall()
     total = 0
     i = 0
