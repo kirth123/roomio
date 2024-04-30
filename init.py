@@ -52,6 +52,10 @@ def login():
 
 @app.route('/loginAuth', methods=['POST'])
 def loginAuth():
+    if not request.form['username'] or not request.form['passwd']:
+        error = "You didn't give a username or password"
+        return render_template('login.html', error = error)
+
     username = request.form['username']
     passwd = str.encode(request.form['passwd'])
 
@@ -63,7 +67,7 @@ def loginAuth():
     if (data):
         if bcrypt.checkpw(passwd, str.encode(data['passwd'])):
             session['username'] = username
-            msg = "You're logged in now"
+            msg = f"You're logged in now, {session['username']}" 
             return render_template('login.html', error = msg)
         else:
             return render_template('login.html')
